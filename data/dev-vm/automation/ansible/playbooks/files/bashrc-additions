@@ -1,0 +1,69 @@
+
+# Source environment variables
+if [ -f $HOME/.env ]; then
+        set -a
+        . $HOME/.env
+        set +a
+fi
+. ~/.env
+
+# Create Local Ansible shortcuts
+alias ansible-requirements-local='ansible-galaxy install --force -r requirements.yaml'
+alias ansible-deploy-local='ansible-playbook -i environments/djla-dev deploy.yaml --vault-password-file=~/.vault_pass'
+alias ansible-teardown-local='ansible-playbook -i environments/djla-dev teardown.yaml --vault-password-file=~/.vault_pass'
+
+
+# Create Docker Ansible shortcuts
+ansible-vault-string() {
+read -p "Enter the value for $1: " secret
+docker run \
+  --env-file $HOME/.env \
+  nexus.sss.local/djla/ansible:latest \
+  ansible-vault encrypt_string "$secret" --name="$1" --vault-password-file=~/.vault_pass
+}
+
+ansible-requirements() {
+docker run \
+  --env-file $HOME/.env \
+  -v ~/.ssh:/opt/app-root/src/.ssh \
+  -v $PWD/automation:/opt/app-root/src/automation \
+  -w /opt/app-root/src/automation/ansible \
+  nexus.sss.local/djla/ansible:latest \
+  ansible-galaxy install -r requirements.yaml --force
+}
+
+ansible-deploy() {
+echo "Ansible Deploy environment: $1"
+echo "Extra Docker run flags: $2"
+docker run \
+  --env-file $HOME/.env \
+  -v ~/.ssh:/opt/app-root/src/.ssh \
+  -v $PWD/automation:/opt/app-root/src/automation \
+  -w /opt/app-root/src/automation/ansible \
+  nexus.sss.local/djla/ansible:latest \
+  ansible-playbook -i environments/$1 deploy.yaml --tags "all,force-recreate" --vault-password-file=~/.vault_pass
+}
+
+ansible-teardown() {
+echo "Ansible Deploy environment: $1"
+echo "Extra Docker run flags: $2"
+docker run \
+  --env-file $HOME/.env \
+  -v ~/.ssh:/opt/app-root/src/.ssh \
+  -v $PWD/automation:/opt/app-root/src/automation \
+  -w /opt/app-root/src/automation/ansible \
+  nexus.sss.local/djla/ansible:latest \
+  ansible-playbook -i environments/$1 teardown.yaml --vault-password-file=~/.vault_pass
+}
+
+ansible-play() {
+echo "Ansible Deploy environment: $1"
+echo "Extra Docker run flags: $2"
+docker run \
+  --env-file $HOME/.env \
+  -v ~/.ssh:/opt/app-root/src/.ssh \
+  -v $PWD/automation:/opt/app-root/src/automation \
+  -w /opt/app-root/src/automation/ansible \
+  nexus.sss.local/djla/ansible:latest \
+  ansible-playbook -i environments/$1 $3.yaml --vault-password-file=~/.vault_pass
+}

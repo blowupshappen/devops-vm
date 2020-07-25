@@ -1,0 +1,32 @@
+// Place your settings in this file to overwrite the default settings
+{{ user.visual_studio_code_settings | to_nice_json }}
+
+
+{
+    "workbench.colorTheme": "SynthWave '84"
+    "diffEditor.renderSideBySide": true
+}
+
+
+{
+    editor.fontSize: 16
+    editor.lineHeight: 24,
+    editor.letterSpacing: 0.5
+    workbench.editor.tabSizing: "shrink"
+    html.format.enable: true
+    editor.tabSize: 2
+    html.format.preserveNewLines: true
+    "[yaml]": {
+        "editor.insertSpaces": true,
+        "editor.tabSize": 2,
+        "editor.detectIndentation: false
+    }
+    "files.exclude": {
+        "**/.git": true,
+        "**/.svn": true,
+        "**/.hg": true,
+        "**/CVS": true,
+        "**/.DS_Store": true,
+        "**/.next": true
+    }
+}

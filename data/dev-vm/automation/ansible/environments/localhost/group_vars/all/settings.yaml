@@ -1,0 +1,9 @@
+---
+# User / Vagrant config. Don't change unless you've also changed the Vagrantfile
+vagrant_share: /vagrant
+user_account: vagrant
+
+# Installation options
+install_gnome: true
+install_vscode: true
+install_remmina: true

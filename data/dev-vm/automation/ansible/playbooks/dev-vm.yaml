@@ -1,0 +1,111 @@
+---
+- name: Configure Development VM
+  hosts: localhost
+  connection: local
+
+  tasks:
+    - name: Create /usr/local/bin because it's missing?
+      become: true
+      file:
+        dest: /usr/local/bin
+        state: directory
+        owner: root
+        group: root
+        mode: 0755
+
+
+    - name: Install epel-release
+      become: true
+      yum:
+        name: epel-release
+
+    - name: Install PowerTools
+      become: true
+      command: dnf config-manager --set-enabled PowerTools
+
+    - name: Install linting tools
+      become: false
+      pip:
+        name:
+          - ansible-lint
+          - yamllint
+        state: latest
+        extra_args: --user
+
+    - name: Set up .env
+      copy:
+        src: "{{ vagrant_share }}/.env"
+        dest: ~/.env
+
+    - name: Set up vault_pass
+      copy:
+        src: vault_pass.py
+        dest: ~/.vault_pass
+
+    - name: Find SSH Keys
+      find:
+        paths: "{{ vagrant_share }}/ssh_keys/"
+        patterns: '*'
+        excludes:
+          - ".gitkeep"
+      register: found_keys
+
+    - name: Copy SSH Keys
+      copy:
+        src: "{{ item.path }}"
+        dest: "~/.ssh/{{ item.path | basename }}"
+        owner: "{{ user_account }}"
+        group: "{{ user_account }}"
+        mode: 0400
+      with_items: "{{ found_keys.files }}"
+
+    - name: Create Projects folder
+      file:
+        path: ~/Projects
+        state: directory
+
+    - name: Add bash aliases
+      blockinfile:
+        block: "{{ lookup('file', 'bashrc-additions') }}"
+        insertafter: "# User specific aliases and functions"
+        path: ~/.bashrc
+        backup: true
+
+    - name: Install GNOME
+      include_role:
+        name: install-gnome
+        apply:
+          become: true
+      when:
+        - install_gnome | bool
+
+    - name: Install VSCode
+      include_role:
+        name: install-vscode
+      when:
+        - install_vscode | bool
+
+    - name: Install Remmina
+      include_role:
+        name: remmina
+      when:
+        - install_remmina | bool
+
+    - name: Install Docker
+      include_role:
+        name: geerlingguy.docker
+        apply:
+          become: true
+
+    - name: Install Card Reader utility (opensc)
+      become: true
+      yum:
+        name: opensc
+        state: latest
+
+    - name: Install OpenVPN client
+      become: true
+      yum:
+        name: openvpn
+        state: latest
+

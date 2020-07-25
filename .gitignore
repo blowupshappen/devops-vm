@@ -1,0 +1,17 @@
+.DS_Store
+.gitconfig
+.idea/
+
+*.env
+*.pem
+*__pycache__
+*.idea
+*.log
+.vagrant/
+
+# Custom files
+data/ssh_keys/*
+!data/ssh_keys/.gitkeep
+
+# Common Roles
+data/dev-vm/automation/ansible/playbooks/roles/geerlingguy.docker
