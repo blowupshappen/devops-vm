@@ -27,4 +27,8 @@ vscode_extensions:
   - alefragnani.project-manager
   - ms-vsliveshare.vsliveshare
   - shardulm94.trailing-spaces
+  - vscode-icons-team.vscode-icons
+
 vscode_settings:
+  editor.tabSize: 2
+  editor.insertSpaces: true

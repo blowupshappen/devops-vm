@@ -18,9 +18,16 @@
       yum:
         name: epel-release
 
+    - name: Get enabled packages
+      become: true
+      command: dnf repolist enabled
+      changed_when: false
+      register: dnf_enabled
+
     - name: Install PowerTools
       become: true
       command: dnf config-manager --set-enabled PowerTools
+      when: "'PowerTools' not in dnf_enabled.stdout"
 
     - name: Set up .env
       copy:
@@ -56,7 +63,7 @@
 
     - name: Add bash aliases
       blockinfile:
-        block: "{{ lookup('file', 'bashrc-additions') }}"
+        block: "{{ lookup('template', 'bashrc-additions.j2') }}"
         insertafter: "# User specific aliases and functions"
         path: ~/.bashrc
         backup: true

@@ -49,6 +49,24 @@
 #     name: psutil
 #     state: absent
 
+- name: install gnome-tweaks
+  yum:
+    name:
+      - gnome-tweaks
+      - chrome-gnome-shell
+    state: present
+
+- name: Check enabled theme
+  become: false
+  command: gsettings get org.gnome.desktop.interface gtk-theme
+  changed_when: false
+  register: current_theme
+
+- name: Change theme
+  become: false
+  command: "gsettings set org.gnome.desktop.interface gtk-theme {{ install_gnome_theme }}"
+  when: current_theme.stdout_lines[0].replace("'", "") != install_gnome_theme
+
 - name: Install psutil (for dconf)
   become: false
   pip:

@@ -1,3 +1,4 @@
 ---
 install_wallpaper: true
 install_lockscreen: true
+install_gnome_theme: Adwaita-dark

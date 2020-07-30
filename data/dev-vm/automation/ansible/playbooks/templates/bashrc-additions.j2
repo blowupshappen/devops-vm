@@ -1,11 +1,13 @@
-
 # Source environment variables
 if [ -f $HOME/.env ]; then
         set -a
         . $HOME/.env
         set +a
 fi
-. ~/.env
+
+{% if shell_prompt is defined %}
+PS1={{ shell_prompt | quote }}
+{% endif %}
 
 # Create Local Ansible shortcuts
 alias ansible-requirements-local='ansible-galaxy install --force -r requirements.yaml'

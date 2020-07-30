@@ -9,3 +9,60 @@ install_vscode: true
 install_remmina: true
 install_brave: true
 install_chrome: true
+
+shell_prompt: '\[\033[0;32m\]\[\033[0m\033[0;32m\]\u\[\033[0;36m\]@\w\[\033[0;32m\]-[$(git branch 2>/dev/null | grep "^*" | colrm 1 2)\[\033[0;32m\]]\[\033[0m\033[0;32m\]\$\[\033[0m\033[0;32m\]\[\033[0m\] '
+
+# VS Code settings
+vscode_settings:
+  terminal.integrated.env.linux:
+    AWS_OWNER: "{{ lookup('ini', 'AWS_OWNER type=properties file=~/.env') | default('') }}"
+    GIT_USERNAME: "{{ lookup('ini', 'GIT_USERNAME type=properties file=~/.env') | default('') }}"
+    GIT_PASSWORD: "{{ lookup('ini', 'GIT_PASSWORD type=properties file=~/.env') | default('') }}"
+    AWS_ACCESS_KEY_ID: "{{ lookup('ini', 'AWS_ACCESS_KEY_ID type=properties file=~/.env') | default('') }}"
+    AWS_SECRET_ACCESS_KEY: "{{ lookup('ini', 'AWS_SECRET_ACCESS_KEY type=properties file=~/.env') | default('') }}"
+    AWS_DEFAULT_REGION: "{{ lookup('ini', 'AWS_DEFAULT_REGION type=properties file=~/.env') | default('') }}"
+    ANSIBLE_VAULT_PASSWORD: "{{ lookup('ini', 'ANSIBLE_VAULT_PASSWORD type=properties file=~/.env') | default('') }}"
+    ANSIBLE_ENABLE_TASK_DEBUGGER: "{{ lookup('ini', 'ANSIBLE_ENABLE_TASK_DEBUGGER type=properties file=~/.env') | default('') }}"
+  editor.fontFamily: Fira Code
+  editor.fontLigatures: true
+  workbench.colorTheme: "SynthWave '84"
+  yaml.format.enable: true
+  aws.profile: "profile:default"
+  workbench.iconTheme: "vscode-icons"
+  window.zoomLevel: 0
+  diffEditor.renderSideBySide: true
+  ansibleVaultInline.keyfile: "~/.vault-pass"
+  ansibleVaultInline.executable: "~/.local/bin/ansible-vault"
+  ansibleVaultInline.keypass: ""
+  http.proxyStrictSSL: false
+  editor.tabSize: 2
+  editor.insertSpaces: true
+  "[yaml]":
+    editor.tabSize: 2
+    editor.insertSpaces: true
+    editor.detectIndentation: false
+  yaml.customTags:
+    - "!And"
+    - "!If"
+    - "!Not"
+    - "!Equals"
+    - "!Or"
+    - "!FindInMap sequence"
+    - "!Base64"
+    - "!Cidr"
+    - "!Ref"
+    - "!Sub"
+    - "!GetAtt"
+    - "!GetAZs"
+    - "!ImportValue"
+    - "!Select"
+    - "!Select sequence"
+    - "!Split"
+    - "!Join sequence"
+  files.exclude:
+    "**/.git": true
+    "**/.svn": true
+    "**/.hg": true
+    "**/CVS": true
+    "**/.DS_Store": true
+    "**/.next": true
