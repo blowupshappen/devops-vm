@@ -1,0 +1,15 @@
+---
+- name: Install chrome browser release repo
+  become: true
+  yum_repository:
+    name: google-chrome
+    description: Google Chrome
+    baseurl: "{{ chrome_baseurl }}"
+    enabled: true
+    gpgcheck: true
+    gpgkey: "{{ chrome_gpgkey }}"
+
+- name: Install Chrome
+  become: true
+  yum:
+    name: google-chrome-stable

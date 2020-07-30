@@ -1,0 +1,13 @@
+---
+galaxy_info:
+  role_name: chrome
+  description: Install Chrome browser
+  author: blowupshappen
+  license: license (MIT)
+  min_ansible_version: 2.9
+  platforms:
+    - name: CentOS
+      versions:
+        - 8
+
+dependencies: []

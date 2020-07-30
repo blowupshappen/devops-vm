@@ -1,0 +1,21 @@
+---
+- name: Install dnf-plugins-core
+  become: true
+  yum:
+    name: dnf-plugins-core
+    state: present
+
+- name: Install brave browser release repo
+  become: true
+  yum_repository:
+    name: brave-browser
+    description: Brave
+    baseurl: "{{ brave_baseurl }}"
+    enabled: true
+    gpgcheck: true
+    gpgkey: "{{ brave_gpgkey }}"
+
+- name: Install Brave
+  become: true
+  yum:
+    name: brave-browser

@@ -3,7 +3,7 @@
   hosts: localhost
   connection: local
 
-  tasks:
+  pre_tasks:
     - name: Create /usr/local/bin because it's missing?
       become: true
       file:
@@ -13,7 +13,6 @@
         group: root
         mode: 0755
 
-
     - name: Install epel-release
       become: true
       yum:
@@ -22,15 +21,6 @@
     - name: Install PowerTools
       become: true
       command: dnf config-manager --set-enabled PowerTools
-
-    - name: Install linting tools
-      become: false
-      pip:
-        name:
-          - ansible-lint
-          - yamllint
-        state: latest
-        extra_args: --user
 
     - name: Set up .env
       copy:
@@ -71,31 +61,30 @@
         path: ~/.bashrc
         backup: true
 
-    - name: Install GNOME
-      include_role:
-        name: install-gnome
-        apply:
-          become: true
-      when:
-        - install_gnome | bool
+  roles:
+    - role: install-gnome
+      become: true
+      when: install_gnome | bool
+    - role: brave
+      when: install_brave | bool
+    - role: chrome
+      when: install_chrome | bool
+    - role: install-vscode
+      when: install_vscode | bool
+    - role: remmina
+      when: install_remmina | bool
+    - role: geerlingguy.docker
+      become: true
 
-    - name: Install VSCode
-      include_role:
-        name: install-vscode
-      when:
-        - install_vscode | bool
-
-    - name: Install Remmina
-      include_role:
-        name: remmina
-      when:
-        - install_remmina | bool
-
-    - name: Install Docker
-      include_role:
-        name: geerlingguy.docker
-        apply:
-          become: true
+  tasks:
+    - name: Install linting tools
+      become: false
+      pip:
+        name:
+          - ansible-lint
+          - yamllint
+        state: latest
+        extra_args: --user
 
     - name: Install Card Reader utility (opensc)
       become: true
@@ -103,9 +92,23 @@
         name: opensc
         state: latest
 
-    - name: Install OpenVPN client
-      become: true
-      yum:
-        name: openvpn
-        state: latest
+    - name: Find certificates
+      find:
+        paths: "{{ vagrant_share }}/certs/"
+        patterns: '*'
+        excludes:
+          - ".gitkeep"
+      register: found_certs
 
+    - name: Copy certificates
+      become: true
+      copy:
+        src: "{{ item.path }}"
+        dest: "/etc/pki/ca-trust/source/anchors/{{ item.path | basename }}"
+      with_items: "{{ found_certs.files }}"
+      register: copied_certs
+
+    - name: Update Trusted CAs
+      become: true
+      command: update-ca-trust
+      when: copied_certs.changed
