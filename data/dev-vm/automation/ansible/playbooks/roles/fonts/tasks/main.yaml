@@ -1,0 +1,21 @@
+---
+- name: Make sure font directory exists
+  file:
+    path: "{{ fonts_directory }}"
+    state: directory
+
+- name: Download FiraCode
+  uri:
+    url: https://github.com/tonsky/FiraCode/blob/master/distr/ttf/FiraCode-{{ item }}.ttf?raw=true
+    dest: "{{ fonts_directory }}/FiraCode-{{ item }}.ttf"
+  with_items:
+    - Bold
+    - Light
+    - Medium
+    - Regular
+    - Retina
+  register: download_firacode
+
+- name: Clear font cache
+  command: fc-cache -f
+  when: download_firacode.changed

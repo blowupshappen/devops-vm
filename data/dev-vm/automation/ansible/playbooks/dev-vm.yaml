@@ -69,6 +69,7 @@
       when: install_brave | bool
     - role: chrome
       when: install_chrome | bool
+    - role: fonts
     - role: install-vscode
       when: install_vscode | bool
     - role: remmina
