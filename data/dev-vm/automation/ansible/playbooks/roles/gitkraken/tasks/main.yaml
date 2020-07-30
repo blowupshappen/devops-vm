@@ -1,0 +1,7 @@
+---
+
+- name: Install GitKraken
+  become: true
+  yum:
+    name: "{{ gitkraken_rpm }}"
+    state: present

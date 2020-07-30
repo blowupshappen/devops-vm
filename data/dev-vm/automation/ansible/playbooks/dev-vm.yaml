@@ -81,6 +81,8 @@
       when: install_vscode | bool
     - role: remmina
       when: install_remmina | bool
+    - role: gitkraken
+      when: install_gitkraken | bool
     - role: geerlingguy.docker
       become: true
 
