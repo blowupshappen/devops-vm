@@ -1,0 +1,5 @@
+---
+kubernetes_repo_baseurl: https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64
+kubernetes_repo_gpgkey: https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+
+kubernetes_helm_installer: https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3

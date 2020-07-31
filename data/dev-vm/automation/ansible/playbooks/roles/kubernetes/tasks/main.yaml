@@ -1,0 +1,28 @@
+---
+- name: Install Kubernetes repository
+  become: true
+  yum_repository:
+    name: Kubernetes
+    description: Kubernetes
+    baseurl: "{{ kubernetes_repo_baseurl }}"
+    enabled: true
+    gpgcheck: true
+    gpgkey: "{{ kubernetes_repo_gpgkey }}"
+
+- name: Install kubectl
+  become: true
+  yum:
+    name: kubectl
+    state: present
+
+- name: Download Helm installer
+  uri:
+    url: "{{ kubernetes_helm_installer }}"
+    dest: /home/{{ user_account }}/get_helm.sh
+    mode: 0700
+    creates: /home/{{ user_account }}/get_helm.sh
+  register: helm_installer
+
+- name: Run Helm installer
+  shell: "/home/{{ user_account }}/get_helm.sh"
+  when: helm_installer.changed

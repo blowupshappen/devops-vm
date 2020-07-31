@@ -85,6 +85,9 @@
       when: install_gitkraken | bool
     - role: geerlingguy.docker
       become: true
+      when: install_docker | bool
+    - role: kubernetes
+      when: install_kubernetes_tools | bool
 
   tasks:
     - name: Install linting tools
