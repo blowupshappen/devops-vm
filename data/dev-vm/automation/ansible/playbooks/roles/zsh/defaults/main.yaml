@@ -1,0 +1,7 @@
+---
+# Only actual supports zsh sry
+shell_shells:
+  - zsh
+
+# zsh or bash for now
+shell_default: zsh

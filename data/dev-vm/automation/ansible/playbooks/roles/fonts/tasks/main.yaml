@@ -16,7 +16,38 @@
     - Regular
     - Retina
   register: download_firacode
+  notify: clear-font-cache
 
-- name: Clear font cache
-  command: fc-cache -f
-  when: download_firacode.changed
+- name: Clone Powerline fonts repo
+  git:
+    repo: https://github.com/powerline/fonts.git
+    depth: 1
+    dest: "{{ download_dir }}/powerline/fonts"
+  register: clone_powerline
+
+- name: Install Powerline fonts
+  shell: "{{ download_dir }}/powerline/fonts/install.sh"
+  when: clone_powerline.changed
+  notify: clear-font-cache
+
+- name: Clone Awesome-Powerline fonts
+  git:
+    repo: https://github.com/gabrielelana/awesome-terminal-fonts.git
+    depth: 1
+    dest: "{{ download_dir }}/awesome-terminal-fonts"
+
+- name: Find awesome-terminal fonts and font maps
+  find:
+    paths: "{{ download_dir }}/awesome-terminal-fonts/build"
+    file_type: file
+    patterns:
+      - "*.ttf"
+      - "*.sh"
+  register: found_fonts
+
+- name: Copy awesome-terminal fonts and font maps
+  copy:
+    src: "{{ item.path }}"
+    dest: "{{ fonts_directory }}/{{ item.path | basename }}"
+  with_items: "{{ found_fonts.files }}"
+  notify: clear-font-cache

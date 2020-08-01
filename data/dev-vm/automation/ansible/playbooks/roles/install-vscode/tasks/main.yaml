@@ -30,10 +30,6 @@
     path: "~/.config/Code/User/settings.json"
   register: existing_settings
 
-- name: debug settings
-  debug:
-    var: existing_settings
-
 - name: Write settings file
   copy:
     dest: "~/.config/Code/User/settings.json"

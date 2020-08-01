@@ -128,5 +128,15 @@
   when:
     - found_lockscreen.matched > 0
 
+- name: Get enabled Gnome Shell Extensions
+  become: false
+  dconf:
+    key: /org/gnome/shell/enabled-extensions
+    state: read
+  register: enabled_extensions
+
+# This wouldn't enable anything until I tracked down the name from /usr/share/gnome-shell/extensions directory
 - name: Enable dash-to-dock
-  shell: gnome-shell-extension-tool -e dash-to-dock
+  become: false
+  shell: gnome-shell-extension-tool -e dash-to-dock@gnome-shell-extensions.gcampax.github.com
+  when: "'dash-to-dock@gnome-shell-extensions.gcampax.github.com' not in enabled_extensions.value"

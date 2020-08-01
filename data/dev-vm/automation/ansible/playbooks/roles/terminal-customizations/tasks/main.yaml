@@ -1,0 +1,28 @@
+---
+- name: Get default terminal identifier
+  command: gsettings get org.gnome.Terminal.ProfilesList default
+  changed_when: false
+  register: default_profile
+
+- name: Change font if custom font is set
+  when: terminal_customizations_font_family | length > 0
+  block:
+    - name: Debug Key
+      debug:
+        msg: /org/gnome/terminal/legacy/profiles:/:{{ default_profile.stdout.replace("'", "") }}/use-system-font
+
+    - name: Disable default font
+      dconf:
+        key: /org/gnome/terminal/legacy/profiles:/:{{ default_profile.stdout.replace("'", "") }}/use-system-font
+        value: "{{ false | string | lower }}"
+
+    - name: Change font family
+      dconf:
+        key: /org/gnome/terminal/legacy/profiles:/:{{ default_profile.stdout.replace("'", "") }}/font
+        value: "'{{ terminal_customizations_font_family }} {{ terminal_customizations_font_size }}'"
+
+- name: Enable use-system-font
+  dconf:
+    key: /org/gnome/terminal/legacy/profiles:/:{{ default_profile.stdout.replace("'", "") }}/use-system-font
+    value: "{{ true | string | lower }}"
+  when: terminal_customizations_font_family | length == 0

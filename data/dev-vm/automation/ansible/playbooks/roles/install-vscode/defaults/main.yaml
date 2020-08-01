@@ -2,32 +2,11 @@
 vscode_site: https://packages.microsoft.com
 vscode_extensions:
   - VisualStudioExptTeam.vscodeintellicode
-  - ms-azuretools.vscode-docker
-  - ms-kubernetes-tools.vscode-kubernetes-tools
-  - secanis.jenkinsfile-support
   - vscoss.vscode-ansible
   - redhat.vscode-yaml
   - samuelcolvin.jinjahtml
-  - wolfmah.ansible-vault-inline
-  - ms-python.python
   - RobbOwen.synthwave-vscode
-  - mechatroner.rainbow-csv
-  - 2gua.rainbow-brackets
-  - esbenp.prettier-vscode
-  - pnp.polacode
-  - techer.open-in-browser
-  - eriklynd.json-tools
   - eamodio.gitlens
-  - donjayamanne.githistory
-  - mikestead.dotenv
-  - CoenraadS.bracket-pair-colorizer
-  - aaron-bond.better-comments
-  - chrmarti.regex
-  - christian-kohler.path-intellisense
-  - alefragnani.project-manager
-  - ms-vsliveshare.vsliveshare
-  - shardulm94.trailing-spaces
-  - vscode-icons-team.vscode-icons
 
 vscode_settings:
   editor.tabSize: 2

@@ -5,8 +5,8 @@ if [ -f $HOME/.env ]; then
         set +a
 fi
 
-{% if shell_prompt is defined %}
-PS1={{ shell_prompt | quote }}
+{% if bash_shell_prompt is defined %}
+PS1={{ bash_shell_prompt | quote }}
 {% endif %}
 
 # Create Local Ansible shortcuts

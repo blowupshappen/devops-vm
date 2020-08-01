@@ -29,7 +29,7 @@
       command: dnf config-manager --set-enabled PowerTools
       when: "'PowerTools' not in dnf_enabled.stdout"
 
-    - name: get ~/.env file stat 
+    - name: get ~/.env file stat
       stat:
         path: ~/.env
       register: envfile
@@ -75,14 +75,21 @@
         backup: true
 
   roles:
+    - role: icons
     - role: install-gnome
       become: true
       when: install_gnome | bool
+    - role: icons
+      when: enable_custom_icons | bool
+    - role: fonts
+      when: enable_custom_fonts | bool
+    - role: zsh
+      when: install_zsh | bool
+    - role: terminal-customizations
     - role: brave
       when: install_brave | bool
     - role: chrome
       when: install_chrome | bool
-    - role: fonts
     - role: install-vscode
       when: install_vscode | bool
     - role: remmina
