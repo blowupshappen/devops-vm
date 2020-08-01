@@ -29,10 +29,16 @@
       command: dnf config-manager --set-enabled PowerTools
       when: "'PowerTools' not in dnf_enabled.stdout"
 
+    - name: get ~/.env file stat 
+      stat:
+        path: ~/.env
+      register: envfile
+
     - name: Set up .env
       copy:
         src: "{{ vagrant_share }}/.env"
         dest: ~/.env
+      when: envfile.stat.exists
 
     - name: Set up vault_pass
       copy:
