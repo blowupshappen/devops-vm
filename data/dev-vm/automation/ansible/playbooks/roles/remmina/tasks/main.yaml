@@ -23,6 +23,13 @@
           - ".gitkeep"
       register: found_profiles
 
+    - name: create ~/.local/share/remmina/ 
+      file:
+        dest: ~/.local/share/remmina/ 
+        state: directory
+        owner: "{{ user_account }}"
+        group: "{{ user_account }}"
+
     - name: Copy Remmina configurations
       copy:
         src: "{{ item.path }}"
