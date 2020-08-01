@@ -127,3 +127,6 @@
     value: "'file:///home/{{ user_account }}/.{{ found_lockscreen.files.0.path | basename }}'"
   when:
     - found_lockscreen.matched > 0
+
+- name: Enable dash-to-dock
+  shell: gnome-shell-extension-tool -e dash-to-dock
