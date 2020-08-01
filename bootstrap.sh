@@ -22,4 +22,5 @@ cd /vagrant/dev-vm/automation/ansible
 echo "Install ansible-galaxy requirements"
 ansible-galaxy install --force -r requirements.yaml
 echo "Run Ansible playbook"
+export ANSIBLE_CONFIG=/vagrant/dev-vm/automation/ansible/ansible.cfg
 ansible-playbook -i environments/localhost deploy.yaml -vvv
