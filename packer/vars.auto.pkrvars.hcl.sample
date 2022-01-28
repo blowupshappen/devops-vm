@@ -1,0 +1,3 @@
+# Set your variable overrides here - see variables.pkr.hcl for a complete list of available variables
+ssh_username = "bender"
+ssh_password = "bender"

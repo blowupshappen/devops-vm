@@ -9,6 +9,11 @@
 *.log
 .vagrant/
 
+# Packer files
+packer/packer_cache/*
+packer/output-devops-vm/*
+packer/vars.auto.pkrvars.hcl
+
 # Custom files
 data/ssh_keys/*
 !data/ssh_keys/.gitkeep
