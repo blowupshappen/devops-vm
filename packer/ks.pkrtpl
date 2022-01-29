@@ -42,8 +42,30 @@ autopart --type=lvm
 reboot
 
 %packages --ignoremissing
+# dnf group list -v
 # dnf group info minimal-environment
 @^minimal-environment
+kexec-tools
+chrony
+-plymouth
+nano
+tar
+zip
+bzip2
+net-tools
+bind-utils
+git
+patch
+elfutils-libelf-devel
+gcc
+make
+perl
+traceroute
+wget
+telnet
+kernel-devel
+python3
+python3-pip
 # Exclude unnecessary firmwares
 -iwl*firmware
 %end

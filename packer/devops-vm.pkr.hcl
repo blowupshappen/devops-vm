@@ -4,7 +4,6 @@ source "virtualbox-iso" "devops-vm" {
   disk_size     = var.disk_size
   guest_os_type = "RedHat_64"
   headless      = false
-  #http_directory   = "http"
   http_content = {
     "/ks.cfg" = templatefile("${path.root}/ks.pkrtpl", { username = var.ssh_username, password = var.ssh_password })
   }
@@ -17,6 +16,8 @@ source "virtualbox-iso" "devops-vm" {
   shutdown_command = "echo '${var.ssh_password}' | sudo -S /sbin/halt -h -p"
   ssh_timeout      = "30m"
   vm_name          = var.vm_name
+  gfx_vram_size    = var.vram
+  gfx_controller   = var.gfx_controller
   vboxmanage = [
     ["modifyvm", "{{.Name}}", "--memory", var.memsize],
     ["modifyvm", "{{.Name}}", "--cpus", var.numvcpus],

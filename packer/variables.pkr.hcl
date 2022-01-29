@@ -33,3 +33,13 @@ variable "disk_size" {
   type    = number
   default = 40960
 }
+
+variable "vram" {
+  type    = number
+  default = 16
+}
+
+variable "gfx_controller" {
+  type    = string
+  default = "vmsvga"
+}
