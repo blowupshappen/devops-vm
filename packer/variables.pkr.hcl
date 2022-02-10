@@ -45,11 +45,11 @@ variable "gfx_controller" {
 }
 
 variable "skip_export" {
-  type    = boolean
+  type    = bool
   default = false
 }
 
 variable "keep_registered" {
-  type    = boolean
+  type    = bool
   default = false
 }
