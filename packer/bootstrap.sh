@@ -18,3 +18,9 @@ sudo mount ~/VBoxGuestAdditions.iso /tmp/isomount
 sudo /tmp/isomount/VBoxLinuxAdditions.run
 sudo umount /tmp/isomount
 sudo rm -rf /tmp/isomount
+
+echo "Installing minimal gnome"
+sudo dnf groupinstall "X Window System" -y
+sudo dnf install gnome-classic-session gnome-terminal nautilus-open-terminal control-center liberation-mono-fonts -y
+sudo unlink /etc/systemd/system/default.target
+sudo ln -sf /lib/systemd/system/graphical.target /etc/systemd/system/default.target
