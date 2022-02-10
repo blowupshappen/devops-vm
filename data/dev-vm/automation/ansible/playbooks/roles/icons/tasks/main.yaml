@@ -1,7 +1,7 @@
 ---
 - name: Make sure icon directory exists
   file:
-    path: /home/{{ user_account }}/.icons
+    path: ~/.icons
     state: directory
 
 - name: Download Numix Base Theme
@@ -15,7 +15,7 @@
   synchronize:
     recursive: true
     src: "{{ download_dir }}/numix-icon-theme/Numix"
-    dest: /home/{{ user_account }}/.icons/
+    dest: ~/.icons/
 
 - name: Download Numix Circle Icon Theme
   git:
@@ -28,7 +28,7 @@
   synchronize:
     recursive: true
     src: "{{ download_dir }}/numix-icon-theme-circle/Numix-Circle"
-    dest: /home/{{ user_account }}/.icons/
+    dest: ~/.icons/
 
 - name: Set Icon Theme to Numix Circle
   become: false
