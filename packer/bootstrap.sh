@@ -19,8 +19,19 @@ sudo /tmp/isomount/VBoxLinuxAdditions.run
 sudo umount /tmp/isomount
 sudo rm -rf /tmp/isomount
 
+echo "Adding our user to the virtualbox group"
+sudo usermod -a -G vboxsf "$USER"
+
 echo "Installing minimal gnome"
 sudo dnf groupinstall "X Window System" -y
 sudo dnf install gnome-classic-session gnome-terminal nautilus-open-terminal control-center liberation-mono-fonts -y
 sudo unlink /etc/systemd/system/default.target
 sudo ln -sf /lib/systemd/system/graphical.target /etc/systemd/system/default.target
+
+echo "setting up ansible galaxy pre-reqs"
+cd /media/sf_devops-vm/data/dev-vm/automation/ansible
+ansible-galaxy install -r requirements.yaml --force --ignore-certs --ignore-errors
+
+echo "Dropping Notes on Desktop"
+mkdir ~/Desktop/
+echo "Need to run Ansible ; cd /media/sf_devops-vm/data/dev-vm/automation/ansible/playbooks ; ansible-playbook dev-vm.yaml -i ../environments/localhost/" > ~/Desktop/run-ansible.txt

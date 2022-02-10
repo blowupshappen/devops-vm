@@ -24,10 +24,10 @@
       changed_when: false
       register: dnf_enabled
 
-    - name: Install PowerTools
-      become: true
-      command: dnf config-manager --set-enabled PowerTools
-      when: "'PowerTools' not in dnf_enabled.stdout"
+    # - name: Install PowerTools
+    #   become: true
+    #   command: dnf config-manager --set-enabled PowerTools
+    #   when: "'PowerTools' not in dnf_enabled.stdout"
 
     - name: get ~/.env file stat
       stat:
@@ -36,7 +36,7 @@
 
     - name: Set up .env
       copy:
-        src: "{{ vagrant_share }}/.env"
+        src: "../../../.env"
         dest: ~/.env
       when: envfile.stat.exists
 
@@ -47,7 +47,7 @@
 
     - name: Find SSH Keys
       find:
-        paths: "{{ vagrant_share }}/ssh_keys/"
+        paths: "../../../ssh_keys/"
         patterns: '*'
         excludes:
           - ".gitkeep"
@@ -75,7 +75,7 @@
         backup: true
 
   roles:
-    - role: icons
+    # - role: icons
     - role: install-gnome
       become: true
       when: install_gnome | bool
@@ -120,7 +120,7 @@
 
     - name: Find certificates
       find:
-        paths: "{{ vagrant_share }}/certs/"
+        paths: "../../../certs/"
         patterns: '*'
         excludes:
           - ".gitkeep"

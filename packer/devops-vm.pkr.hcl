@@ -21,6 +21,8 @@ source "virtualbox-iso" "devops-vm" {
   vboxmanage = [
     ["modifyvm", "{{.Name}}", "--memory", var.memsize],
     ["modifyvm", "{{.Name}}", "--cpus", var.numvcpus],
+    ["modifyvm", "{{.Name}}", "--clipboard", "bidirectional"]
+    ["sharedfolder", "add", "{{.Name}}", "--name", "devops-vm", "--hostpath", "../", "--automount"],
   ]
   skip_export = var.skip_export
   keep_registered = var.keep_registered
