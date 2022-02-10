@@ -22,7 +22,8 @@ source "virtualbox-iso" "devops-vm" {
     ["modifyvm", "{{.Name}}", "--memory", var.memsize],
     ["modifyvm", "{{.Name}}", "--cpus", var.numvcpus],
   ]
-
+  skip_export = var.skip_export
+  keep_registered = var.keep_registered
 }
 
 build {

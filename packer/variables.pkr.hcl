@@ -43,3 +43,13 @@ variable "gfx_controller" {
   type    = string
   default = "vmsvga"
 }
+
+variable "skip_export" {
+  type    = bool
+  default = false
+}
+
+variable "keep_registered" {
+  type    = bool
+  default = false
+}
