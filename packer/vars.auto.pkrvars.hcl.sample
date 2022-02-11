@@ -4,5 +4,4 @@ ssh_password = "bender"
 skip_export = true
 keep_registered = true
 numvcpus = 4
-boot_wait = 1s
 memsize = 4096
