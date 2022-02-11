@@ -18,11 +18,11 @@
 - name: Download Helm installer
   uri:
     url: "{{ kubernetes_helm_installer }}"
-    dest: /home/{{ user_account }}/get_helm.sh
+    dest: ~/get_helm.sh
     mode: 0700
-    creates: /home/{{ user_account }}/get_helm.sh
+    creates: ~/get_helm.sh
   register: helm_installer
 
 - name: Run Helm installer
-  shell: "/home/{{ user_account }}/get_helm.sh"
+  shell: "~/get_helm.sh"
   when: helm_installer.changed

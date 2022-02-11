@@ -17,7 +17,7 @@
 
     - name: Find Remmina configurations
       find:
-        paths: "{{ vagrant_share }}/remmina/"
+        paths: "../../../../remmina/"
         patterns: '*'
         excludes:
           - ".gitkeep"
@@ -27,14 +27,10 @@
       file:
         dest: ~/.local/share/remmina/ 
         state: directory
-        owner: "{{ user_account }}"
-        group: "{{ user_account }}"
 
     - name: Copy Remmina configurations
       copy:
         src: "{{ item.path }}"
         dest: "~/.local/share/remmina/{{ item.path | basename }}"
-        owner: "{{ user_account }}"
-        group: "{{ user_account }}"
         force: "{{ remmina_overwrite_existing_profiles }}"
       with_items: "{{ found_profiles.files }}"

@@ -8,18 +8,18 @@
 - name: Download oh-my-zsh install
   uri:
     url: https://github.com/robbyrussell/oh-my-zsh/raw/master/tools/install.sh
-    dest: "/home/{{ user_account }}/install.sh"
+    dest: "~/install.sh"
     mode: 0755
-    creates: "/home/{{ user_account }}/install.sh"
+    creates: "~/install.sh"
 
 - name: Install oh-my-zsh
   shell:
-    cmd: /home/{{ user_account }}/install.sh
+    cmd: ~/install.sh
     executable: /usr/bin/zsh
-    creates: /home/{{ user_account }}/.oh-my-zsh
+    creates: ~/.oh-my-zsh
 
 - name: Install PowerLevel10k oh-my-zsh theme
   git:
     repo: https://github.com/romkatv/powerlevel10k.git
     depth: 1
-    dest: /home/{{ user_account }}/.oh-my-zsh/custom/themes/powerlevel10k
+    dest: ~/.oh-my-zsh/custom/themes/powerlevel10k

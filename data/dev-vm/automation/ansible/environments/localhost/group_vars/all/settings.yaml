@@ -1,9 +1,4 @@
 ---
-# User / Vagrant config. Don't change unless you've also changed the Vagrantfile
-vagrant_share: /vagrant
-user_account: vagrant
-download_dir: "/home/{{ user_account }}/Downloads"
-
 # Installation options
 # Note that zsh configuration is currently pretty closely tied to needing custom fonts and terminal customizations
 install_gnome: true
@@ -11,25 +6,25 @@ install_vscode: true
 install_remmina: true
 install_brave: true
 install_chrome: true
-install_gitkraken: true
+install_gitkraken: false
 install_kubernetes_tools: true
 install_docker: true
 install_zsh: true
-enable_custom_icons: true
-enable_custom_fonts: true
+enable_custom_icons: false
+enable_custom_fonts: false
 
 bash_shell_prompt: '\[\033[0;32m\]\[\033[0m\033[0;32m\]\u\[\033[0;36m\]@\w\[\033[0;32m\]-[$(git branch 2>/dev/null | grep "^*" | colrm 1 2)\[\033[0;32m\]]\[\033[0m\033[0;32m\]\$\[\033[0m\033[0;32m\]\[\033[0m\] '
 
 # Set some terminal customizations - not much here yet
-terminal_customizations_font_family: Fira Code Medium
-terminal_customizations_font_size: 10
+# terminal_customizations_font_family: Fira Code Medium
+# terminal_customizations_font_size: 10
 
 # VS Code Extensions
 vscode_extensions:
   - VisualStudioExptTeam.vscodeintellicode
   - ms-azuretools.vscode-docker
   - ms-kubernetes-tools.vscode-kubernetes-tools
-  - vscoss.vscode-ansible
+  # - vscoss.vscode-ansible
   - redhat.vscode-yaml
   - samuelcolvin.jinjahtml
   - wolfmah.ansible-vault-inline

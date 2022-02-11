@@ -1,2 +1,2 @@
 ---
-fonts_directory: /home/{{ user_account }}/.local/share/fonts
+fonts_directory: ~/.local/share/fonts

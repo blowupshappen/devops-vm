@@ -36,9 +36,9 @@
 
     - name: Set up .env
       copy:
-        src: "../../../.env"
+        src: "../../../../.env"
         dest: ~/.env
-      when: envfile.stat.exists
+      when: not envfile.stat.exists
 
     - name: Set up vault_pass
       copy:
@@ -47,7 +47,7 @@
 
     - name: Find SSH Keys
       find:
-        paths: "../../../ssh_keys/"
+        paths: "../../../../ssh_keys/"
         patterns: '*'
         excludes:
           - ".gitkeep"
@@ -120,7 +120,7 @@
 
     - name: Find certificates
       find:
-        paths: "../../../certs/"
+        paths: "../../../../certs/"
         patterns: '*'
         excludes:
           - ".gitkeep"
