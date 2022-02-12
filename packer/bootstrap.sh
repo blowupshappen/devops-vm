@@ -31,7 +31,6 @@ sudo ln -sf /lib/systemd/system/graphical.target /etc/systemd/system/default.tar
 echo "Dropping Notes on Desktop"
 mkdir ~/Desktop/
 echo "# Need to run Ansible 
-cd /media/sf_devops-vm/data/dev-vm/automation/ansible
+cd /media/sf_devops-vm/ansible
 ansible-galaxy install -r requirements.yaml --force --ignore-certs --ignore-errors
-cd /media/sf_devops-vm/data/dev-vm/automation/ansible/playbooks
-ansible-playbook dev-vm.yaml -i ../environments/localhost/ -vvv" > ~/Desktop/run-ansible.txt
+ansible-playbook deploy.yaml -i environments/localhost/ -vvv" > ~/Desktop/run-ansible.txt

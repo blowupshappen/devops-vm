@@ -1,0 +1,216 @@
+---
+- name: Configure Development VM
+  hosts: localhost
+  connection: local
+
+  pre_tasks:
+    - name: Copy certificates
+      become: true
+      copy:
+        src: "{{ vagrant_share }}/certs/"
+        dest: "/etc/pki/ca-trust/source/anchors/"
+      register: copied_certs
+
+    - name: Update Trusted CAs
+      become: true
+      command: update-ca-trust
+      when: copied_certs.changed
+
+    # - name: Create /usr/local/bin because it's missing?
+    #   become: true
+    #   file:
+    #     dest: /usr/local/bin
+    #     state: directory
+    #     owner: root
+    #     group: root
+    #     mode: 0755
+
+    - name: Install epel-release
+      become: true
+      yum:
+        name: epel-release
+
+    - name: Install missing packages
+      become: true
+      package:
+        name: rsync
+
+    - name: Install missing python
+      pip:
+        name:
+          - psutil
+        state: present
+        extra_args: --user
+
+    - name: Install missing python
+      become: true
+      pip:
+        name:
+          - psutil
+        state: present
+        extra_args: --user
+
+    - name: Get enabled packages
+      become: true
+      command: dnf repolist enabled
+      changed_when: false
+      register: dnf_enabled
+
+    - name: Create devops group
+      become: True
+      group:
+        name: devops
+
+    - name: Create additional users
+      become: True
+      user:
+        name: "{{ item.name }}"
+        groups:
+          - devops
+          - vboxsf
+      with_items: "{{ additional_users }}"
+
+    - block:
+      - name: Create Additional Users
+        become: true
+        user:
+          name: "{{ item.name }}"
+          password: "{{ item.password | password_hash('sha512') }}"
+          group: "{{ item.group | default(omit) }}"
+          groups: "{{ item.groups }}"
+          append: "{{ item.append | default(False) }}"
+          home: "/home/{{ item.name }}"
+          shell: "/bin/bash"
+          skeleton: "{{ item.skeleton | default(omit) }}"
+          state: present
+        with_items: "{{ additional_users }}"
+
+      - name: setup a list of users
+        set_fact:
+          users_loop: []
+
+      - name: setup a list of users to loop through
+        set_fact:
+          users_loop: "{{ users_loop }} + [ '{{ item.name }}' ]"
+        with_items: "{{ additional_users }}"
+      when: additional_users is defined
+
+    - name: Configure project-environments directory
+      become: True
+      file:
+        name: /srv/project-environments/
+        group: devops
+        mode: 775
+        state: directory
+
+    - name: Find .env files
+      find:
+        paths: "{{ data_directory }}/envs/"
+        patterns: ".env*"
+        hidden: True
+        excludes:
+          - ".gitkeep"
+          - ".env.sample"
+      register: envfiles
+
+    - name: Set up .env
+      copy:
+        src: "{{ data_directory }}/envs/"
+        dest: "/srv/project-environments/{{ item.path | basename }}"
+      with_items: "{{ envfiles.files }}"
+
+    - name: Set up vault_pass
+      copy:
+        src: vault_pass.py
+        dest: ~/.vault_pass
+
+    - name: Find SSH Keys
+      find:
+        paths: "{{ data_directory }}/ssh_keys/"
+        patterns: '*'
+        excludes:
+          - ".gitkeep"
+      register: found_keys
+
+    - name: Copy SSH Keys
+      copy:
+        src: "{{ item.path }}"
+        dest: "~/.ssh/{{ item.path | basename }}"
+        mode: 0400
+      with_items: "{{ found_keys.files }}"
+
+    - name: Create Projects folder
+      file:
+        path: ~/Projects
+        state: directory
+
+    - name: Add bash aliases
+      blockinfile:
+        block: "{{ lookup('template', 'bashrc-additions.j2') }}"
+        insertafter: "# User specific aliases and functions"
+        path: ~/.bashrc
+        backup: true
+
+  roles:
+    - role: install-gnome
+      become: true
+      when: install_gnome | bool
+    - role: icons
+      when: enable_custom_icons | bool
+    - role: fonts
+      when: enable_custom_fonts | bool
+    - role: zsh
+      when: install_zsh | bool
+    - role: terminal-customizations
+    - role: brave
+      when: install_brave | bool
+    - role: chrome
+      when: install_chrome | bool
+    - role: install-vscode
+      when: install_vscode | bool
+    - role: remmina
+      when: install_remmina | bool
+    - role: gitkraken
+      when: install_gitkraken | bool
+    - role: geerlingguy.docker
+      become: true
+      when: install_docker | bool
+    - role: kubernetes
+      when: install_kubernetes_tools | bool
+
+  tasks:
+    - name: Install linting tools
+      become: false
+      pip:
+        name:
+          - ansible-lint
+          - yamllint
+        state: latest
+        extra_args: --user
+
+    - name: Install Card Reader utility (opensc)
+      become: true
+      yum:
+        name: opensc
+        state: latest
+
+    - name: Find certificates
+      find:
+        paths: "../../../../certs/"
+        patterns: '*'
+        excludes:
+          - ".gitkeep"
+      register: found_certs
+
+    - name: Copy certificates
+      become: true
+      copy:
+        src: "{{ item.path }}"
+        dest: "/etc/pki/ca-trust/source/anchors/{{ item.path | basename }}"
+      with_items: "{{ found_certs.files }}"
+      register: copied_certs
+
+    - name: Update Trusted CAs
+      become: true
+      command: update-ca-trust
+      when: copied_certs.changed

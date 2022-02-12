@@ -1,0 +1,156 @@
+---
+download_dir: "~/Downloads"
+
+data_directory: "../../data"
+
+additional_users:
+  - name: leela
+    password: myuserpass
+    groups: 'vboxsf, wheel, devops'
+    default_environment: ".env"
+
+user_pip:
+  - configparser
+  - ansible
+  - boto3
+  - virtualenv
+  - pytest
+  - awscli
+
+user_yum:
+  - openvpn
+  - NetworkManager-openvpn
+  - NetworkManager-openvpn-gnome
+  - kernel-devel
+  - htop
+  - nano
+  - https://www.rpmfind.net/linux/fedora/linux/updates/32/Everything/x86_64/Packages/p/pcsc-lite-ccid-1.4.33-1.fc32.x86_64.rpm # added to support newer CAC readers
+
+user_hosts: []
+  # this creates individual lines in your /etc/hosts such as <IP> <name> for each item in this list
+  # - ip: 1.2.3.4
+  #   names:
+  #     - test.com
+
+# note these extensions must match what you can download from https://extensions.gnome.org
+# the name must match the value in metadata.json in the zip
+user_gnome_extensions:
+  - name: dash-to-panel@jderose9.github.com
+    extension_url: https://extensions.gnome.org/extension-data/dash-to-paneljderose9.github.com.v40.shell-extension.zip
+
+# Installation options
+# Note that zsh configuration is currently pretty closely tied to needing custom fonts and terminal customizations
+install_gnome: true
+install_vscode: true
+install_remmina: true
+install_brave: true
+install_chrome: true
+install_gitkraken: false
+install_kubernetes_tools: true
+install_docker: true
+install_zsh: true
+install_azure_cli: true
+install_terraform: true
+enable_custom_icons: true
+enable_custom_fonts: true
+
+# yum specific repo settings
+yum_gpgcheck: no
+yum_sslverify: no
+
+bash_shell_prompt: '\[\033[0;32m\]\[\033[0m\033[0;32m\]\u\[\033[0;36m\]@\w\[\033[0;32m\]-[$(git branch 2>/dev/null | grep "^*" | colrm 1 2)\[\033[0;32m\]]\[\033[0m\033[0;32m\]\$\[\033[0m\033[0;32m\]\[\033[0m\] '
+
+bashrc_additions: |
+  # # add things here you want to add to .bashrc
+  # if [ -d /media/sf_GitHub/DDH/dev-helpers ]; then
+  #   # setup our AWS credentials as ENV variables pulling from ~/.aws/credentials
+  #   eval $(python /media/sf_GitHub/DDH/dev-helpers/set-aws-credentials.py)
+  #   PATH="$PATH:/media/sf_GitHub/DDH/dev-helpers"
+  #   export PATH
+  # fi
+
+# Set some terminal customizations - not much here yet
+terminal_customizations_font_family: Fira Code Medium
+terminal_customizations_font_size: 10
+
+# VS Code Extensions
+vscode_extensions:
+  - VisualStudioExptTeam.vscodeintellicode
+  - ms-azuretools.vscode-docker
+  - ms-kubernetes-tools.vscode-kubernetes-tools
+  - redhat.vscode-yaml
+  - samuelcolvin.jinjahtml
+  - wolfmah.ansible-vault-inline
+  - ms-python.python
+  - RobbOwen.synthwave-vscode
+  - mechatroner.rainbow-csv
+  - 2gua.rainbow-brackets
+  - esbenp.prettier-vscode
+  - pnp.polacode
+  - techer.open-in-browser
+  - eriklynd.json-tools
+  - eamodio.gitlens
+  - donjayamanne.githistory
+  - mikestead.dotenv
+  - CoenraadS.bracket-pair-colorizer
+  - aaron-bond.better-comments
+  - chrmarti.regex
+  - christian-kohler.path-intellisense
+  - alefragnani.project-manager
+  - ms-vsliveshare.vsliveshare
+  - shardulm94.trailing-spaces
+  - vscode-icons-team.vscode-icons
+  - Gruntfuggly.todo-tree
+
+# VS Code settings
+vscode_settings:
+  terminal.integrated.env.linux:
+    AWS_OWNER: "{{ lookup('ini', 'AWS_OWNER type=properties file=~/.env') | default('') }}"
+    AWS_ACCESS_KEY_ID: "{{ lookup('ini', 'AWS_ACCESS_KEY_ID type=properties file=~/.env') | default('') }}"
+    AWS_SECRET_ACCESS_KEY: "{{ lookup('ini', 'AWS_SECRET_ACCESS_KEY type=properties file=~/.env') | default('') }}"
+    AWS_DEFAULT_REGION: "{{ lookup('ini', 'AWS_DEFAULT_REGION type=properties file=~/.env') | default('') }}"
+    ANSIBLE_VAULT_PASSWORD: "{{ lookup('ini', 'ANSIBLE_VAULT_PASSWORD type=properties file=~/.env') | default('') }}"
+    ANSIBLE_ENABLE_TASK_DEBUGGER: "{{ lookup('ini', 'ANSIBLE_ENABLE_TASK_DEBUGGER type=properties file=~/.env') | default('') }}"
+  editor.fontFamily: Fira Code
+  editor.fontLigatures: true
+  workbench.colorTheme: "SynthWave '84"
+  yaml.format.enable: true
+  aws.profile: "profile:default"
+  workbench.iconTheme: "vscode-icons"
+  window.zoomLevel: 0
+  diffEditor.renderSideBySide: true
+  ansibleVaultInline.keyfile: "~/.vault-pass"
+  ansibleVaultInline.executable: "~/.local/bin/ansible-vault"
+  ansibleVaultInline.keypass: ""
+  http.proxyStrictSSL: false
+  editor.tabSize: 2
+  editor.insertSpaces: true
+  "[yaml]":
+    editor.tabSize: 2
+    editor.insertSpaces: true
+    editor.detectIndentation: false
+  yaml.customTags:
+    - "!And"
+    - "!If"
+    - "!Not"
+    - "!Equals"
+    - "!Or"
+    - "!FindInMap sequence"
+    - "!Base64"
+    - "!Cidr"
+    - "!Ref"
+    - "!Sub"
+    - "!GetAtt"
+    - "!GetAZs"
+    - "!ImportValue"
+    - "!Select"
+    - "!Select sequence"
+    - "!Split"
+    - "!Join sequence"
+  files.exclude:
+    "**/.git": true
+    "**/.svn": true
+    "**/.hg": true
+    "**/CVS": true
+    "**/.DS_Store": true
+    "**/.next": true

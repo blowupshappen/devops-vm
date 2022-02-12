@@ -23,9 +23,29 @@ packer build .
 
 ### Bootstrap
 The bootstrap shell script is a helper that mostly prepares the machine to run ansible, then runs the Ansible playbook.
-  
-  * Patches the machine
-  * Installs kernel-devel for VBox Additions Support
-  * Installs Python3 and Pip3 globally
-  * Installs ansible as the vagrant user
-  * Installs ansible-galaxy requirements
+
+* Patches the machine
+* Installs kernel-devel for VBox Additions Support
+* Installs Python3 and Pip3 globally
+* Installs ansible as user
+* Installs ansible-galaxy requirements
+
+### Import the image
+1. In VirtualBox, choose "Import".
+2. Leave Source as `Local File System`
+3. Browse to the `.ovf` file that was just output into the `output-devops-vm` directory
+4. Click "Next"
+5. Change any settings you'd like and then click "Import"
+
+### Configure shared folder
+
+To simplify configuration via Ansible scripts, create a shared folder between your VM and host machine.
+1. Click "Settings"
+2. Navigate to Shared Folders
+3. Click the "Add Folder" icon
+4. Navigate to your git files, or choose another directory to share.
+5. Choose Auto Mount
+
+# TODO: Resolve issues
+- Better video settings
+- no PowerTools

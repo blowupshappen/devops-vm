@@ -7,7 +7,6 @@
 *__pycache__
 *.idea
 *.log
-.vagrant/
 
 # Packer files
 packer/packer_cache/*
@@ -17,6 +16,8 @@ packer/vars.auto.pkrvars.hcl
 # Custom files
 data/ssh_keys/*
 !data/ssh_keys/.gitkeep
+data/envs/*
+!data/envs/.env.sample
 
 # Common Roles
-data/dev-vm/automation/ansible/playbooks/roles/geerlingguy.docker
+ansible/playbooks/roles/geerlingguy.docker
