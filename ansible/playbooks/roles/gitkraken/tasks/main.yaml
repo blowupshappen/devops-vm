@@ -2,6 +2,7 @@
 
 - name: Install GitKraken
   become: true
-  yum:
+  dnf:
     name: "{{ gitkraken_rpm }}"
     state: present
+    disable_gpg_check: yes

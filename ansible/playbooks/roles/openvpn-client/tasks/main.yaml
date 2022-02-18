@@ -7,7 +7,7 @@
 
     - name: Find OpenVPN profiles
       find:
-        paths: "{{ vagrant_share }}/openvpn/"
+        paths: "{{ data_directory }}/openvpn/"
         patterns: '*'
         excludes:
           - ".gitkeep"

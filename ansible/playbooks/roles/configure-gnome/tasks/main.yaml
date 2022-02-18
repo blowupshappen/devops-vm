@@ -1,5 +1,5 @@
 ---
-- name: install the 'Gnome desktop' environment group
+- name: Instal
   yum:
     name:
       - "@Workstation"
@@ -109,21 +109,17 @@
   when:
     - found_lockscreen.matched > 0
 
-- name: Get enabled Gnome Shell Extensions
-  become: false
+- name: Create Gnome favorites
+  become: True
+  become_user: "{{ primary_user }}"
   dconf:
-    key: /org/gnome/shell/enabled-extensions
-    state: read
-  register: enabled_extensions
+    key: "/org/gnome/shell/favorite-apps"
+    value: "['firefox.desktop', 'org.gnome.Nautilus.desktop','org.gnome.Terminal.desktop','google-chrome.desktop', 'brave-browser.desktop', 'org.remmina.Remmina.desktop', 'code.desktop', 'gitkraken.desktop']"
+    state: present
 
-- name: set enabled_extensions if null
-  set_fact: 
-    enabled_extensions:
-      value: []
-  when: enabled_extensions.value == None
-
-# This wouldn't enable anything until I tracked down the name from /usr/share/gnome-shell/extensions directory
-- name: Enable dash-to-dock
+- name: Disable the lockscreen curtain
   become: false
-  shell: gnome-shell-extension-tool -e dash-to-dock@gnome-shell-extensions.gcampax.github.com
-  #when: "(enabled_extensions.value is None) or ('dash-to-dock@gnome-shell-extensions.gcampax.github.com' not in enabled_extensions.value)"
+  command: gsettings set org.gnome.desktop.session idle-delay 0
+
+- name: Add extensions
+  include_tasks: custom_gnome_extensions.yaml

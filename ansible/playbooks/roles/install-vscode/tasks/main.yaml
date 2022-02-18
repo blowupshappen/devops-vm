@@ -7,7 +7,8 @@
     file: vscode
     baseurl: '{{ vscode_site }}/yumrepos/vscode'
     gpgkey: '{{ vscode_site }}/keys/microsoft.asc'
-    gpgcheck: true
+    gpgcheck: "{{ yum_gpgcheck | default(true) }}"
+    sslverify: "{{ yum_sslverify | default(omit) }}"
 
 - name: Install VSCode
   become: true
@@ -15,15 +16,19 @@
     name: code
     state: present
 
-- name: Check installed extensions
-  shell: code --list-extensions  # noqa 305
-  changed_when: false
-  register: installed_extensions
+- name: Manage open files in sysctl.conf for a large workspace
+  become: true
+  sysctl:
+    name: fs.inotify.max_user_watches
+    value: '524288'
+    state: present
+    sysctl_set: yes
+    reload: yes
 
-- name: Install extensions
-  shell: code --install-extension {{ item }}  # noqa 305
-  loop: "{{ vscode_extensions }}"
-  when: item not in installed_extensions.stdout
+- name: Make sure vscode settings directory exists
+  file:
+    path: "~/.config/Code/User/"
+    state: directory
 
 - name: Check for settings
   stat:
@@ -35,3 +40,14 @@
     dest: "~/.config/Code/User/settings.json"
     content: "{{ vscode_settings | to_nice_json }}"
     backup: true
+  when: not existing_settings.stat.exists
+
+- name: Check installed extensions
+  shell: code --list-extensions  # noqa 305
+  changed_when: false
+  register: installed_extensions
+
+- name: Install extensions
+  shell: code --install-extension {{ item }}  --ignore-certificate-errors  # noqa 305
+  loop: "{{ vscode_extensions }}"
+  when: item not in installed_extensions.stdout

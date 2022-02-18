@@ -1,7 +1,7 @@
 # Source environment variables
-if [ -f /srv/project-environments/.env ]; then
+if [ -f ~/environments/.env ]; then
         set -a
-        . /srv/project-environments/.env
+        . ~/environments/.env
         set +a
 fi
 
@@ -18,14 +18,14 @@ alias ansible-teardown-local='ansible-playbook -i environments/djla-dev teardown
 ansible-vault-string() {
 read -p "Enter the value for $1: " secret
 docker run \
-  --env-file /srv/project-environments/.env \
+  --env-file ~/environments/.env \
   nexus.sss.local/djla/ansible:latest \
   ansible-vault encrypt_string "$secret" --name="$1" --vault-password-file=~/.vault_pass
 }
 
 ansible-requirements() {
 docker run \
-  --env-file /srv/project-environments/.env \
+  --env-file ~/environments/.env \
   -v ~/.ssh:/opt/app-root/src/.ssh \
   -v $PWD/automation:/opt/app-root/src/automation \
   -w /opt/app-root/src/automation/ansible \
@@ -37,7 +37,7 @@ ansible-deploy() {
 echo "Ansible Deploy environment: $1"
 echo "Extra Docker run flags: $2"
 docker run \
-  --env-file /srv/project-environments/.env \
+  --env-file ~/environments/.env \
   -v ~/.ssh:/opt/app-root/src/.ssh \
   -v $PWD/automation:/opt/app-root/src/automation \
   -w /opt/app-root/src/automation/ansible \
@@ -49,7 +49,7 @@ ansible-teardown() {
 echo "Ansible Deploy environment: $1"
 echo "Extra Docker run flags: $2"
 docker run \
-  --env-file /srv/project-environments/.env \
+  --env-file ~/environments/.env \
   -v ~/.ssh:/opt/app-root/src/.ssh \
   -v $PWD/automation:/opt/app-root/src/automation \
   -w /opt/app-root/src/automation/ansible \
@@ -61,7 +61,7 @@ ansible-play() {
 echo "Ansible Deploy environment: $1"
 echo "Extra Docker run flags: $2"
 docker run \
-  --env-file /srv/project-environments/.env \
+  --env-file ~/environments/.env \
   -v ~/.ssh:/opt/app-root/src/.ssh \
   -v $PWD/automation:/opt/app-root/src/automation \
   -w /opt/app-root/src/automation/ansible \

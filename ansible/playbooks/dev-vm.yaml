@@ -4,10 +4,14 @@
   connection: local
 
   pre_tasks:
+    - name: current local user
+      set_fact:
+        primary_user: "{{ ansible_user_id }}"
+
     - name: Copy certificates
       become: true
       copy:
-        src: "{{ vagrant_share }}/certs/"
+        src: "{{ data_directory }}/certs/"
         dest: "/etc/pki/ca-trust/source/anchors/"
       register: copied_certs
 
@@ -16,39 +20,19 @@
       command: update-ca-trust
       when: copied_certs.changed
 
-    # - name: Create /usr/local/bin because it's missing?
-    #   become: true
-    #   file:
-    #     dest: /usr/local/bin
-    #     state: directory
-    #     owner: root
-    #     group: root
-    #     mode: 0755
+    - name: Verify /usr/local/bin exists
+      become: true
+      file:
+        dest: /usr/local/bin
+        state: directory
+        owner: root
+        group: root
+        mode: 0755
 
     - name: Install epel-release
       become: true
       yum:
         name: epel-release
-
-    - name: Install missing packages
-      become: true
-      package:
-        name: rsync
-
-    - name: Install missing python
-      pip:
-        name:
-          - psutil
-        state: present
-        extra_args: --user
-
-    - name: Install missing python
-      become: true
-      pip:
-        name:
-          - psutil
-        state: present
-        extra_args: --user
 
     - name: Get enabled packages
       become: true
@@ -56,52 +40,16 @@
       changed_when: false
       register: dnf_enabled
 
-    - name: Create devops group
-      become: True
-      group:
-        name: devops
-
-    - name: Create additional users
-      become: True
-      user:
-        name: "{{ item.name }}"
-        groups:
-          - devops
-          - vboxsf
-      with_items: "{{ additional_users }}"
-
-    - block:
-      - name: Create Additional Users
-        become: true
-        user:
-          name: "{{ item.name }}"
-          password: "{{ item.password | password_hash('sha512') }}"
-          group: "{{ item.group | default(omit) }}"
-          groups: "{{ item.groups }}"
-          append: "{{ item.append | default(False) }}"
-          home: "/home/{{ item.name }}"
-          shell: "/bin/bash"
-          skeleton: "{{ item.skeleton | default(omit) }}"
-          state: present
-        with_items: "{{ additional_users }}"
-
-      - name: setup a list of users
-        set_fact:
-          users_loop: []
-
-      - name: setup a list of users to loop through
-        set_fact:
-          users_loop: "{{ users_loop }} + [ '{{ item.name }}' ]"
-        with_items: "{{ additional_users }}"
-      when: additional_users is defined
-
-    - name: Configure project-environments directory
-      become: True
+    - name: Create user directories
       file:
-        name: /srv/project-environments/
-        group: devops
-        mode: 775
+        name: "{{ item }}"
         state: directory
+      loop:
+        - ~/environments/
+        - ~/.ssh/
+        - ~/.aws/
+        - ~/Projects
+        - "{{ download_dir }}"
 
     - name: Find .env files
       find:
@@ -113,10 +61,10 @@
           - ".env.sample"
       register: envfiles
 
-    - name: Set up .env
+    - name: Set up .env files
       copy:
-        src: "{{ data_directory }}/envs/"
-        dest: "/srv/project-environments/{{ item.path | basename }}"
+        src: "{{ item.path }}"
+        dest: "~/environments/{{ item.path | basename }}"
       with_items: "{{ envfiles.files }}"
 
     - name: Set up vault_pass
@@ -137,12 +85,39 @@
         src: "{{ item.path }}"
         dest: "~/.ssh/{{ item.path | basename }}"
         mode: 0400
-      with_items: "{{ found_keys.files }}"
+      with_nested:
+        - "{{ found_keys.files }}"
 
-    - name: Create Projects folder
-      file:
-        path: ~/Projects
-        state: directory
+    - name: Find .git settings
+      find:
+        paths: "{{ data_directory }}/git/"
+        patterns: '*'
+        excludes:
+          - ".gitkeep"
+      register: found_git
+
+    - name: Copy git files
+      copy:
+        src: "{{ item.path }}"
+        dest: "~/{{ item.path | basename }}"
+        mode: 0400
+      with_nested:
+        - "{{ found_git.files }}"
+
+    - name: Find .aws settings
+      find:
+        paths: "{{ data_directory }}/aws/"
+        patterns: '*'
+        excludes:
+          - ".gitkeep"
+      register: found_aws
+
+    - name: Copy aws files
+      copy:
+        src: "{{ item.path }}"
+        dest: "~/.aws/{{ item.path | basename }}"
+      with_nested:
+        - "{{ found_aws.files }}"
 
     - name: Add bash aliases
       blockinfile:
@@ -152,7 +127,7 @@
         backup: true
 
   roles:
-    - role: install-gnome
+    - role: configure-gnome
       become: true
       when: install_gnome | bool
     - role: icons
@@ -168,6 +143,10 @@
       when: install_chrome | bool
     - role: install-vscode
       when: install_vscode | bool
+    - role: azure-cli
+      when: install_azure_cli | bool
+    - role: terraform
+      when: install_terraform | bool
     - role: remmina
       when: install_remmina | bool
     - role: gitkraken
@@ -175,42 +154,61 @@
     - role: geerlingguy.docker
       become: true
       when: install_docker | bool
+      ansible_os_family: "RedHat"
     - role: kubernetes
       when: install_kubernetes_tools | bool
+    - role: cac-reader
+      when: install_cac_reader | bool
+    - role: f5-vpn
+      when: install_f5_vpn | bool
 
   tasks:
-    - name: Install linting tools
-      become: false
+    - name: Modify groups
+      become: true
+      user:
+        name: "{{ primary_user }}"
+        groups: docker
+        append: "yes"
+        state: present
+
+    - name: Install user-defined packages
+      become: true
+      yum:
+        name: "{{ user_yum }}"
+        disable_gpg_check: yes
+
+    - name: upgrade pip to latest
       pip:
-        name:
-          - ansible-lint
-          - yamllint
+        name: pip
         state: latest
         extra_args: --user
 
-    - name: Install Card Reader utility (opensc)
-      become: true
-      yum:
-        name: opensc
+    - name: Install pip packages
+      pip:
+        name: "{{ user_pip }}"
         state: latest
+        extra_args: --user
+      environment:
+        ANSIBLE_SKIP_CONFLICT_CHECK: 1 # to workaround the ansible upgrade to 2.10
 
-    - name: Find certificates
-      find:
-        paths: "../../../../certs/"
-        patterns: '*'
-        excludes:
-          - ".gitkeep"
-      register: found_certs
+    - name: Create empty hosts block
+      set_fact:
+        hosts_block: "\n"
 
-    - name: Copy certificates
+    - name: Build custom block for /etc/hosts
+      set_fact:
+        hosts_block: "{{ hosts_block }}{{ item['ip'] }}    {{ item['names'] | join(' ') }}\n"
+      with_items: "{{ user_hosts }}"
+
+    - name: Add customizations to /etc/hosts
+      become: yes
+      blockinfile:
+        dest: /etc/hosts
+        block: "{{ hosts_block }}"
+        state: present
+
+    - name: Update packages
       become: true
-      copy:
-        src: "{{ item.path }}"
-        dest: "/etc/pki/ca-trust/source/anchors/{{ item.path | basename }}"
-      with_items: "{{ found_certs.files }}"
-      register: copied_certs
-
-    - name: Update Trusted CAs
-      become: true
-      command: update-ca-trust
-      when: copied_certs.changed
+      package:
+        name: '*'
+        state: latest

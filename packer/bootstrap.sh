@@ -33,4 +33,4 @@ mkdir ~/Desktop/
 echo "# Need to run Ansible 
 cd /media/sf_devops-vm/ansible
 ansible-galaxy install -r requirements.yaml --force --ignore-certs --ignore-errors
-ansible-playbook deploy.yaml -i environments/localhost/ -vvv" > ~/Desktop/run-ansible.txt
+ANSIBLE_ENABLE_TASK_DEBUGGER=True ansible-playbook deploy.yaml -i environments/localhost/ -vvv" > ~/Desktop/run-ansible.txt

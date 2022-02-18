@@ -10,8 +10,10 @@
     gpgcheck: "{{ yum_gpgcheck | default(true) }}"
     sslverify: "{{ yum_sslverify | default(omit) }}"
 
-- name: Install hashicorp terraform
+- name: Install hashicorp terraform and packer
   become: true
   yum:
-    name: terraform
+    name:
+      - terraform
+      - packer
     state: present

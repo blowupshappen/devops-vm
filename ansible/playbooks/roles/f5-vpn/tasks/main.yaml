@@ -1,0 +1,14 @@
+---
+- name: "Check installed packages"
+  package_facts:
+    manager: "auto"
+
+- name: Run F5 installer
+  become: true
+  package:
+    name: "{{ f5_installer_url }}"
+    validate_certs: false
+    disable_gpg_check: yes
+  when:
+    - "'f5vpn' not in ansible_facts.packages"
+    - f5_installer_url is defined
