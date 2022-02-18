@@ -141,6 +141,8 @@
       when: install_brave | bool
     - role: chrome
       when: install_chrome | bool
+    - role: aws-cli
+      when: install_aws_cli | bool
     - role: install-vscode
       when: install_vscode | bool
     - role: azure-cli

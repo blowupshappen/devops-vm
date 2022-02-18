@@ -1,5 +1,5 @@
 ---
-- name: Instal
+- name: Install packages
   yum:
     name:
       - "@Workstation"
@@ -9,7 +9,7 @@
   async: 1500
   poll: 30
 
-- name: get default runlevel
+- name: Get default runlevel
   command: systemctl get-default  # noqa 303
   register: runlevel
   changed_when: false
@@ -30,7 +30,7 @@
   when:
     - graphical_target.stdout != 'active'
 
-- name: install gnome-tweaks
+- name: Install gnome-tweaks
   yum:
     name:
       - gnome-tweaks
@@ -79,10 +79,11 @@
     - found_wallpapers.matched > 0
 
 - name: Set GNOME wallpaper
-  become: false
+  become: True
+  become_user: "{{ primary_user }}"
   dconf:
     key: /org/gnome/desktop/background/picture-uri
-    value: "'file:///~/.{{ found_wallpapers.files.0.path | basename }}'"
+    value: "'file:///home/{{ primary_user }}/.{{ found_wallpapers.files.0.path | basename }}'"
   when:
     - found_wallpapers.matched > 0
 
@@ -105,7 +106,7 @@
   become: false
   dconf:
     key: /org/gnome/desktop/screensaver/picture-uri
-    value: "'file:///~/.{{ found_lockscreen.files.0.path | basename }}'"
+    value: "'file:///home/{{ primary_user }}/.{{ found_lockscreen.files.0.path | basename }}'"
   when:
     - found_lockscreen.matched > 0
 
