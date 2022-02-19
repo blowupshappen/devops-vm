@@ -1,0 +1,83 @@
+---
+# Shamelessly stolen color variables
+
+# Reset
+prompt_color_off: '\[\e[0m\]'       # Text Reset
+prompt_on_color_off: '\[\e[0m\]'    # Text Reset
+
+# FG Regular Colors
+prompt_black: '\[\e[0;30m\]'        # Black
+prompt_red: '\[\e[0;31m\]'          # Red
+prompt_green: '\[\e[0;32m\]'        # Green
+prompt_yellow: '\[\e[0;33m\]'       # Yellow
+prompt_blue: '\[\e[0;34m\]'         # Blue
+prompt_purple: '\[\e[0;35m\]'       # Purple
+prompt_cyan: '\[\e[0;36m\]'         # Cyan
+prompt_white: '\[\e[0;37m\]'        # White
+
+# FG Bold
+prompt_bold_black: '\[\e[1;30m\]'       # Black
+prompt_bold_red: '\[\e[1;31m\]'         # Red
+prompt_bold_green: '\[\e[1;32m\]'       # Green
+prompt_bold_yellow: '\[\e[1;33m\]'      # Yellow
+prompt_bold_blue: '\[\e[1;34m\]'        # Blue
+prompt_bold_purple: '\[\e[1;35m\]'      # Purple
+prompt_bold_cyan: '\[\e[1;36m\]'        # Cyan
+prompt_bold_white: '\[\e[1;37m\]'       # White
+
+# FG Underline
+prompt_underline_black: '\[\e[4;30m\]'       # Black
+prompt_underline_red: '\[\e[4;31m\]'         # Red
+prompt_underline_green: '\[\e[4;32m\]'       # Green
+prompt_underline_yellow: '\[\e[4;33m\]'      # Yellow
+prompt_underline_blue: '\[\e[4;34m\]'        # Blue
+prompt_underline_purple: '\[\e[4;35m\]'      # Purple
+prompt_underline_cyan: '\[\e[4;36m\]'        # Cyan
+prompt_underline_white: '\[\e[4;37m\]'       # White
+
+# FG High Intensity
+prompt_intense_black: '\[\e[0;90m\]'       # Black
+prompt_intense_red: '\[\e[0;91m\]'         # Red
+prompt_intense_green: '\[\e[0;92m\]'       # Green
+prompt_intense_yellow: '\[\e[0;93m\]'      # Yellow
+prompt_intense_blue: '\[\e[0;94m\]'        # Blue
+prompt_intense_purple: '\[\e[0;95m\]'      # Purple
+prompt_intense_cyan: '\[\e[0;96m\]'        # Cyan
+prompt_intense_white: '\[\e[0;97m\]'       # White
+
+# Bold High Intensity
+prompt_bold_intense_black: '\[\e[1;90m\]'      # Black
+prompt_bold_intense_red: '\[\e[1;91m\]'        # Red
+prompt_bold_intense_green: '\[\e[1;92m\]'      # Green
+prompt_bold_intense_yellow: '\[\e[1;93m\]'     # Yellow
+prompt_bold_intense_blue: '\[\e[1;94m\]'       # Blue
+prompt_bold_intense_purple: '\[\e[1;95m\]'     # Purple
+prompt_bold_intense_cyan: '\[\e[1;96m\]'       # Cyan
+prompt_bold_intense_white: '\[\e[1;97m\]'      # White
+
+# BG Colors
+prompt_bg_black: '\[\e[40m\]'       # Black
+prompt_bg_red: '\[\e[41m\]'         # Red
+prompt_bg_green: '\[\e[42m\]'       # Green
+prompt_bg_yellow: '\[\e[43m\]'      # Yellow
+prompt_bg_blue: '\[\e[44m\]'        # Blue
+prompt_bg_purple: '\[\e[45m\]'      # Purple
+prompt_bg_cyan: '\[\e[46m\]'        # Cyan
+prompt_bg_white: '\[\e[47m\]'       # White
+
+# BG High Intensity
+prompt_bg_intense_black: '\[\e[100m\]'   # Black
+prompt_bg_intense_red: '\[\e[101m\]'     # Red
+prompt_bg_intense_green: '\[\e[102m\]'   # Green
+prompt_bg_intense_yellow: '\[\e[103m\]'  # Yellow
+prompt_bg_intense_blue: '\[\e[104m\]'    # Blue
+prompt_bg_intense_purple: '\[\e[105m\]'  # Purple
+prompt_bg_intense_cyan: '\[\e[106m\]'    # Cyan
+prompt_bg_intense_white: '\[\e[107m\]'   # White
+
+# Other Prompt objects
+prompt_username: "\\u"
+prompt_current_directory: "\\w"
+prompt_git_info: '$(git branch 2>/dev/null | grep "^*" | colrm 1 2)'
+prompt_project: "$(echo $PROJECT)"
+prompt_prompt: "\\$"

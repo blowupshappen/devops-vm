@@ -54,8 +54,15 @@ install_f5_vpn: true
 yum_gpgcheck: no
 yum_sslverify: no
 
-bash_shell_prompt: '\[\033[0;32m\]\[\033[0m\033[0;32m\]\u\[\033[0;36m\]@\w\[\033[0;32m\]-[$(git branch 2>/dev/null | grep "^*" | colrm 1 2)\[\033[0;32m\]]\[\033[0m\033[0;32m\]\$\[\033[0m\033[0;32m\]\[\033[0m\] '
-
+# Sets your bash shell prompt - see vars/prompt.yaml for options.
+# Sample - Dev
+# bash_shell_prompt: '{{ prompt_green }}{{ prompt_username }}{{ prompt_cyan }}@{{ prompt_current_directory }}{{ prompt_green }}-[{{ prompt_git_info }}] {{ prompt_cyan }}[{{ prompt_project }}]{{ prompt_green }}{{ prompt_prompt }}{{ prompt_color_off }} '
+# Sample - Test Environment
+# bash_shell_prompt: '{{ prompt_bold_blue }}{{ prompt_username }}{{ prompt_bold_yellow }}@{{ prompt_current_directory }}{{ prompt_bold_blue }}-[{{ prompt_git_info }}] {{ prompt_bold_yellow }}[{{ prompt_project }}]{{ prompt_bold_white }} {{ prompt_prompt }}{{ prompt_color_off }} '
+# Sample - Hideous Prod Environment
+# bash_shell_prompt: '{{ prompt_bg_black }}{{ prompt_bold_red }}{{ prompt_username }}{{ prompt_color_off }}{{ prompt_bold_yellow }}@{{ prompt_current_directory }}{{ prompt_bg_black }}{{ prompt_bold_red }}-[{{ prompt_git_info }}] {{ prompt_bg_white }}{{ prompt_bold_red }}\u2605\u2605\u2605\u2605[{{ prompt_project }}]\u2605\u2605\u2605\u2605{{ prompt_white }} {{ prompt_prompt }}{{ prompt_color_off }} '
+bash_shell_prompt: '{{ prompt_green }}{{ prompt_username }}{{ prompt_cyan }}@{{ prompt_current_directory }}{{ prompt_green }}-[{{ prompt_git_info }}] {{ prompt_cyan }}[{{ prompt_project }}]{{ prompt_green }} {{ prompt_prompt }}{{ prompt_color_off }} '
+bashrc_ansible_aliases: True
 bashrc_additions: |
   # # add things here you want to add to .bashrc
   # if [ -d /media/sf_GitHub/DDH/dev-helpers ]; then

@@ -2,6 +2,8 @@
 - name: Configure Development VM
   hosts: localhost
   connection: local
+  vars_files:
+    - vars/prompt.yaml
 
   pre_tasks:
     - name: current local user

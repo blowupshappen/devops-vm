@@ -6,68 +6,16 @@ if [ -f ~/environments/.env ]; then
 fi
 
 {% if bash_shell_prompt is defined %}
-PS1={{ bash_shell_prompt | quote }}
+PS1=${{ bash_shell_prompt | quote }}
 {% endif %}
 
+{% if bashrc_ansible_aliases | bool %}
 # Create Local Ansible shortcuts
-alias ansible-requirements-local='ansible-galaxy install --force -r requirements.yaml'
-alias ansible-deploy-local='ansible-playbook -i environments/djla-dev deploy.yaml --vault-password-file=~/.vault_pass'
-alias ansible-teardown-local='ansible-playbook -i environments/djla-dev teardown.yaml --vault-password-file=~/.vault_pass'
+alias ansible-requirements='ansible-galaxy install --force -r requirements.yaml'
+alias ansible-deploy='ansible-playbook -i environments/$PROJECT_INVENTORY_NAME deploy.yaml --vault-password-file=~/.vault_pass'
+alias ansible-teardown='ansible-playbook -i environments/$PROJECT_INVENTORY_NAME teardown.yaml --vault-password-file=~/.vault_pass'
+{% endif %}
 
-# Create Docker Ansible shortcuts
-ansible-vault-string() {
-read -p "Enter the value for $1: " secret
-docker run \
-  --env-file ~/environments/.env \
-  nexus.sss.local/djla/ansible:latest \
-  ansible-vault encrypt_string "$secret" --name="$1" --vault-password-file=~/.vault_pass
-}
-
-ansible-requirements() {
-docker run \
-  --env-file ~/environments/.env \
-  -v ~/.ssh:/opt/app-root/src/.ssh \
-  -v $PWD/automation:/opt/app-root/src/automation \
-  -w /opt/app-root/src/automation/ansible \
-  nexus.sss.local/djla/ansible:latest \
-  ansible-galaxy install -r requirements.yaml --force
-}
-
-ansible-deploy() {
-echo "Ansible Deploy environment: $1"
-echo "Extra Docker run flags: $2"
-docker run \
-  --env-file ~/environments/.env \
-  -v ~/.ssh:/opt/app-root/src/.ssh \
-  -v $PWD/automation:/opt/app-root/src/automation \
-  -w /opt/app-root/src/automation/ansible \
-  nexus.sss.local/djla/ansible:latest \
-  ansible-playbook -i environments/$1 deploy.yaml --tags "all,force-recreate" --vault-password-file=~/.vault_pass
-}
-
-ansible-teardown() {
-echo "Ansible Deploy environment: $1"
-echo "Extra Docker run flags: $2"
-docker run \
-  --env-file ~/environments/.env \
-  -v ~/.ssh:/opt/app-root/src/.ssh \
-  -v $PWD/automation:/opt/app-root/src/automation \
-  -w /opt/app-root/src/automation/ansible \
-  nexus.sss.local/djla/ansible:latest \
-  ansible-playbook -i environments/$1 teardown.yaml --vault-password-file=~/.vault_pass
-}
-
-ansible-play() {
-echo "Ansible Deploy environment: $1"
-echo "Extra Docker run flags: $2"
-docker run \
-  --env-file ~/environments/.env \
-  -v ~/.ssh:/opt/app-root/src/.ssh \
-  -v $PWD/automation:/opt/app-root/src/automation \
-  -w /opt/app-root/src/automation/ansible \
-  nexus.sss.local/djla/ansible:latest \
-  ansible-playbook -i environments/$1 $3.yaml --vault-password-file=~/.vault_pass
-}
 
 {% if bashrc_additions is defined %}
 {{ bashrc_additions }}
