@@ -45,7 +45,3 @@ To simplify configuration via Ansible scripts, create a shared folder between yo
 3. Click the "Add Folder" icon
 4. Navigate to your git files, or choose another directory to share.
 5. Choose Auto Mount
-
-# TODO: Resolve issues
-- Better video settings
-- no PowerTools
