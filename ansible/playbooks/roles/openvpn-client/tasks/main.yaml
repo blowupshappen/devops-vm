@@ -1,0 +1,35 @@
+---
+    - name: Install OpenVPN client
+      become: true
+      yum:
+        name: openvpn
+        state: latest
+
+    - name: Find OpenVPN profiles
+      find:
+        paths: "{{ data_directory }}/openvpn/"
+        patterns: '*'
+        excludes:
+          - ".gitkeep"
+      register: found_profiles
+
+    - name: Copy OpenVPN profiles
+      copy:
+        src: "{{ item.path }}"
+        dest: "~//{{ item.path | basename }}"
+      with_items: "{{ found_profiles.files }}"
+
+    - name: Import OpenVPN profiles
+      become: true
+      command: nmcli connection import type openvpn file ~/{{ item.path | basename }}
+      with_items: "{{ found_profiles.files }}"
+
+    - name: Modify connection properties - IPv4 traffic
+      become: true
+      command: nmcli connection modify "{{ item.path | basename | splitext | first }} ipv4.never-default true"
+      with_items: "{{ found_profiles.files }}"
+
+    - name: Modify connection properties - IPv6 traffic
+      become: true
+      command: nmcli connection modify "{{ item.path | basename | splitext | first }} ipv6.never-default true"
+      with_items: "{{ found_profiles.files }}"

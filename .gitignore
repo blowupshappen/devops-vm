@@ -1,17 +1,24 @@
 .DS_Store
 .gitconfig
 .idea/
+.vscode
 
 *.env
 *.pem
 *__pycache__
 *.idea
 *.log
-.vagrant/
+
+# Packer files
+packer/packer_cache/*
+packer/output-devops-vm/*
+packer/vars.auto.pkrvars.hcl
 
 # Custom files
 data/ssh_keys/*
 !data/ssh_keys/.gitkeep
+data/envs/*
+!data/envs/.env.sample
 
 # Common Roles
-data/dev-vm/automation/ansible/playbooks/roles/geerlingguy.docker
+ansible/playbooks/roles/geerlingguy.docker

@@ -1,0 +1,43 @@
+---
+- name: Get enabled Gnome Shell Extensions
+  become: True
+  become_user: "{{ primary_user }}"
+  dconf:
+    key: /org/gnome/shell/enabled-extensions
+    state: read
+  register: enabled_extensions
+
+- name: Set extensions if needed
+  # this will just be null if nothing has ever been loaded which messes with logic, because logic
+  set_fact:
+    extensions: "[]"
+  when: not enabled_extensions.value
+
+- name: Set extensions value
+  set_fact:
+    extensions: "{{ enabled_extensions.value }}"
+  when: enabled_extensions.value
+
+- block:
+  - name: Create extension directories
+    file:
+      state: directory
+      path: "~/.local/share/gnome-shell/extensions/{{ item.name }}"
+    with_items: "{{ user_gnome_extensions }}"
+
+  - name: Unzip extensions
+    unarchive:
+      src: "{{ item.extension_url }}"
+      dest: "~/.local/share/gnome-shell/extensions/{{ item.name }}"
+      remote_src: yes
+    with_items: "{{ user_gnome_extensions }}"
+
+  - name: Enable Extensions
+    become: True
+    become_user: "{{ primary_user }}"
+    dconf:
+      key: /org/gnome/shell/enabled-extensions
+      value: "{{ extensions }} + ['{{ item.name }}']"
+    notify: reload gnome-shell
+    with_items: "{{ user_gnome_extensions }}"
+  when: "'item.name' not in extensions"

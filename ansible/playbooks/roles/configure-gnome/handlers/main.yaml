@@ -1,0 +1,6 @@
+---
+
+- name: reload gnome-shell
+  become: yes
+  service:
+    name: gdm.service

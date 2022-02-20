@@ -1,0 +1,17 @@
+---
+- name: Install azurecli repo
+  become: true
+  yum_repository:
+    name: azurecli
+    description: azurecli repo
+    file: azurecli
+    baseurl: '{{ azurecli_site }}/yumrepos/azure-cli'
+    gpgkey: '{{ azurecli_site }}/keys/microsoft.asc'
+    gpgcheck: "{{ yum_gpgcheck | default(true) }}"
+    sslverify: "{{ yum_sslverify | default(omit) }}"
+
+- name: Install azurecli
+  become: true
+  yum:
+    name: azure-cli
+    state: present

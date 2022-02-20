@@ -1,0 +1,25 @@
+---
+- name: Install zsh
+  become: true
+  yum:
+    name: zsh
+  when: "'zsh' in shell_shells"
+
+- name: Download oh-my-zsh install
+  uri:
+    url: https://github.com/robbyrussell/oh-my-zsh/raw/master/tools/install.sh
+    dest: "~/install.sh"
+    mode: 0755
+    creates: "~/install.sh"
+
+- name: Install oh-my-zsh
+  shell:
+    cmd: ~/install.sh
+    executable: /usr/bin/zsh
+    creates: ~/.oh-my-zsh
+
+- name: Install PowerLevel10k oh-my-zsh theme
+  git:
+    repo: https://github.com/romkatv/powerlevel10k.git
+    depth: 1
+    dest: ~/.oh-my-zsh/custom/themes/powerlevel10k

@@ -1,0 +1,14 @@
+---
+- name: Update bashrc
+  hosts: localhost
+  connection: local
+  vars_files:
+    - vars/prompt.yaml
+
+  tasks:
+    - name: Add bash aliases
+      blockinfile:
+        block: "{{ lookup('template', 'bashrc-additions.j2') }}"
+        insertafter: "# User specific aliases and functions"
+        path: ~/.bashrc
+        backup: true

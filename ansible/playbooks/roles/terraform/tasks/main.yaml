@@ -1,0 +1,19 @@
+---
+- name: Install hashcorp repo
+  become: true
+  yum_repository:
+    name: Hashicorp-Stable
+    description: hashicorp repo
+    file: hashicorp
+    baseurl: "{{ terraform_repo }}"
+    gpgkey: https://rpm.releases.hashicorp.com/gpg
+    gpgcheck: "{{ yum_gpgcheck | default(true) }}"
+    sslverify: "{{ yum_sslverify | default(omit) }}"
+
+- name: Install hashicorp terraform and packer
+  become: true
+  yum:
+    name:
+      - terraform
+      - packer
+    state: present

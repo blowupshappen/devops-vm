@@ -1,0 +1,218 @@
+---
+- name: Configure Development VM
+  hosts: localhost
+  connection: local
+  vars_files:
+    - vars/prompt.yaml
+
+  pre_tasks:
+    - name: current local user
+      set_fact:
+        primary_user: "{{ ansible_user_id }}"
+
+    - name: Copy certificates
+      become: true
+      copy:
+        src: "{{ data_directory }}/certs/"
+        dest: "/etc/pki/ca-trust/source/anchors/"
+      register: copied_certs
+
+    - name: Update Trusted CAs
+      become: true
+      command: update-ca-trust
+      when: copied_certs.changed
+
+    - name: Verify /usr/local/bin exists
+      become: true
+      file:
+        dest: /usr/local/bin
+        state: directory
+        owner: root
+        group: root
+        mode: 0755
+
+    - name: Install epel-release
+      become: true
+      yum:
+        name: epel-release
+
+    - name: Get enabled packages
+      become: true
+      command: dnf repolist enabled
+      changed_when: false
+      register: dnf_enabled
+
+    - name: Create user directories
+      file:
+        name: "{{ item }}"
+        state: directory
+      loop:
+        - ~/environments/
+        - ~/.ssh/
+        - ~/.aws/
+        - ~/Projects
+        - "{{ download_dir }}"
+
+    - name: Find .env files
+      find:
+        paths: "{{ data_directory }}/envs/"
+        patterns: ".env*"
+        hidden: True
+        excludes:
+          - ".gitkeep"
+          - ".env.sample"
+      register: envfiles
+
+    - name: Set up .env files
+      copy:
+        src: "{{ item.path }}"
+        dest: "~/environments/{{ item.path | basename }}"
+      with_items: "{{ envfiles.files }}"
+
+    - name: Set up vault_pass
+      copy:
+        src: vault_pass.py
+        dest: ~/.vault_pass
+
+    - name: Find SSH Keys
+      find:
+        paths: "{{ data_directory }}/ssh_keys/"
+        patterns: '*'
+        excludes:
+          - ".gitkeep"
+      register: found_keys
+
+    - name: Copy SSH Keys
+      copy:
+        src: "{{ item.path }}"
+        dest: "~/.ssh/{{ item.path | basename }}"
+        mode: 0400
+      with_nested:
+        - "{{ found_keys.files }}"
+
+    - name: Find .git settings
+      find:
+        paths: "{{ data_directory }}/git/"
+        patterns: '*'
+        excludes:
+          - ".gitkeep"
+      register: found_git
+
+    - name: Copy git files
+      copy:
+        src: "{{ item.path }}"
+        dest: "~/{{ item.path | basename }}"
+        mode: 0400
+      with_nested:
+        - "{{ found_git.files }}"
+
+    - name: Find .aws settings
+      find:
+        paths: "{{ data_directory }}/aws/"
+        patterns: '*'
+        excludes:
+          - ".gitkeep"
+      register: found_aws
+
+    - name: Copy aws files
+      copy:
+        src: "{{ item.path }}"
+        dest: "~/.aws/{{ item.path | basename }}"
+      with_nested:
+        - "{{ found_aws.files }}"
+
+    - name: Add bash aliases
+      blockinfile:
+        block: "{{ lookup('template', 'bashrc-additions.j2') }}"
+        insertafter: "# User specific aliases and functions"
+        path: ~/.bashrc
+        backup: true
+
+  roles:
+    - role: configure-gnome
+      become: true
+      when: install_gnome | bool
+    - role: icons
+      when: enable_custom_icons | bool
+    - role: fonts
+      when: enable_custom_fonts | bool
+    - role: zsh
+      when: install_zsh | bool
+    - role: terminal-customizations
+    - role: brave
+      when: install_brave | bool
+    - role: chrome
+      when: install_chrome | bool
+    - role: aws-cli
+      when: install_aws_cli | bool
+    - role: install-vscode
+      when: install_vscode | bool
+    - role: azure-cli
+      when: install_azure_cli | bool
+    - role: terraform
+      when: install_terraform | bool
+    - role: remmina
+      when: install_remmina | bool
+    - role: gitkraken
+      when: install_gitkraken | bool
+    - role: geerlingguy.docker
+      become: true
+      when: install_docker | bool
+      ansible_os_family: "RedHat"
+    - role: kubernetes
+      when: install_kubernetes_tools | bool
+    - role: cac-reader
+      when: install_cac_reader | bool
+    - role: f5-vpn
+      when: install_f5_vpn | bool
+
+  tasks:
+    - name: Modify groups
+      become: true
+      user:
+        name: "{{ primary_user }}"
+        groups: docker
+        append: "yes"
+        state: present
+
+    - name: Install user-defined packages
+      become: true
+      yum:
+        name: "{{ user_yum }}"
+        disable_gpg_check: yes
+
+    - name: upgrade pip to latest
+      pip:
+        name: pip
+        state: latest
+        extra_args: --user
+
+    - name: Install pip packages
+      pip:
+        name: "{{ user_pip }}"
+        state: latest
+        extra_args: --user
+      environment:
+        ANSIBLE_SKIP_CONFLICT_CHECK: 1 # to workaround the ansible upgrade to 2.10
+
+    - name: Create empty hosts block
+      set_fact:
+        hosts_block: "\n"
+
+    - name: Build custom block for /etc/hosts
+      set_fact:
+        hosts_block: "{{ hosts_block }}{{ item['ip'] }}    {{ item['names'] | join(' ') }}\n"
+      with_items: "{{ user_hosts }}"
+
+    - name: Add customizations to /etc/hosts
+      become: yes
+      blockinfile:
+        dest: /etc/hosts
+        block: "{{ hosts_block }}"
+        state: present
+
+    - name: Update packages
+      become: true
+      package:
+        name: '*'
+        state: latest

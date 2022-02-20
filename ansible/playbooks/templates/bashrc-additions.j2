@@ -1,0 +1,22 @@
+# Source environment variables
+if [ -f ~/environments/.env ]; then
+        set -a
+        . ~/environments/.env
+        set +a
+fi
+
+{% if bash_shell_prompt is defined %}
+PS1=${{ bash_shell_prompt | quote }}
+{% endif %}
+
+{% if bashrc_ansible_aliases | bool %}
+# Create Local Ansible shortcuts
+alias ansible-requirements='ansible-galaxy install --force -r requirements.yaml'
+alias ansible-deploy='ansible-playbook -i environments/$PROJECT_INVENTORY_NAME deploy.yaml --vault-password-file=~/.vault_pass'
+alias ansible-teardown='ansible-playbook -i environments/$PROJECT_INVENTORY_NAME teardown.yaml --vault-password-file=~/.vault_pass'
+{% endif %}
+
+
+{% if bashrc_additions is defined %}
+{{ bashrc_additions }}
+{% endif %}

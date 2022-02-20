@@ -1,0 +1,21 @@
+---
+- name: Install Card Reader utility (opensc)
+  become: true
+  package:
+    name:
+      - opensc
+      - pcsc-tools
+      - nss-tools
+      - pcsc-lite
+      - perl-pcsc
+      - ccid
+      - opensc
+      - gnutls-utils
+    state: latest
+
+- name: Start service pcscd, if not started
+  become: true
+  service:
+    name: pcscd
+    state: started
+    enabled: yes
