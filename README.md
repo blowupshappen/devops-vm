@@ -23,7 +23,7 @@ Copy the `vars.auto.pkrvars.hcl.sample` file and name it `vars.auto.pkrvars.hcl`
 Inside the cloned directory run:
 ```
 cd packer
-cp vars.auto.pkrvars.hcl.sample vars.auto.pkrvars.hcl
+copy vars.auto.pkrvars.hcl.sample vars.auto.pkrvars.hcl
 packer build .
 ```
 This will take a little while as it pulls the centos image for the first time, and bootstraps the VM.
